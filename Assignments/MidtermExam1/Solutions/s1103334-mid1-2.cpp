@@ -288,19 +288,26 @@ void multiplication(int multiplicand[], int multiplier, int product[],
 // minuend -= subtrahend
 void subtraAssign(int minuend[], int subtrahend[], int& minuendSize, int subtrahendSize)
 {
-	int i;
-	for (i = 0; i < subtrahendSize; i++)
-		minuend[i] -= subtrahend[i];
-
-	for (i = 0; i < minuendSize - 1; i++)
-		if (minuend[i] < 0)
+	int difference[arraySize] = {};
+	for (int i = 0; i < minuendSize; i++)//modify
+	{
+		if (minuend[i] > subtrahend[i])
 		{
-			minuend[i] += 10;
-			minuend[i + 1] -= 1;
+			difference[i] += minuend[i] - subtrahend[i];
 		}
+		else if (minuend[i] < subtrahend[i])
+		{
+			difference[i + 1] -= 1;
+			difference[i] += minuend[i] - subtrahend[i] + 10;
+		}
+		else //mhy-add
+			difference[i] = 0; //mhy-add
+	}
 
-	for (i = minuendSize; i >= 0; i--) //modify
-		if (minuend[i - 1]) //modify
-			break;
-	minuendSize = i;
+	int zero = 0;
+	for (int i = minuendSize-1; difference[i] != 0; i++) //mhy-modify
+		zero++;
+	minuendSize -= zero;
+	for (int i = 0; i < minuendSize; i++)//modify
+		minuend[i] = difference[i];
 }
