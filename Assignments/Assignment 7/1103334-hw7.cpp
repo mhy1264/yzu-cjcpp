@@ -331,21 +331,23 @@ void addition(int*& addendCoef, int*& addendExpon, int& addendSize,
 		int count = 0;
 		for (i = 0; i < k; i++)
 		{
-			if (sumCoef[i])
+			if (sumCoef[i]) // 如果 sumCoef[i] == 0 => 把那筆資料記錄在buff裡面
 			{
 				buffCoef[count] = sumCoef[i];
 				buffExpon[count] = sumExpon[i];
-				count++;
+				count++; //計算有資料的項數
 			}
-			sumCoef[i] = 0;
-			sumExpon[i] = 0;
+			sumCoef[i] = 0;  // 歸零
+			sumExpon[i] = 0; // 歸零 
 		}
-		k = count;
-		for (i = 0; i < count; i++)
+		k = count; // 重新給大小
+		for (i = 0; i < count; i++)  //把 buff 的資料移到 sum 裡面
 		{
 			sumCoef[i] = buffCoef[i];
 			sumExpon[i] = buffExpon[i];
 		}
+		delete[] buffCoef;
+		delete[] buffExpon;
 
 	}
 	if (addendSize != k)
