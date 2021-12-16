@@ -123,7 +123,7 @@ void performTransactions(Account& currentAccount, int& recordNumber, int& remain
 			cout << "Exiting the system..." << endl;
 			cout << "Thank you!Goodbye!" << endl;
 			saveAccount(currentAccount, recordNumber);
-			return;
+			return; 
 		default:
 			cout << "You did not enter a valid selection. Try again." << endl;
 			cout << endl;
@@ -156,7 +156,7 @@ void withdrawal(Account& currentAccount, int& remainingBills)
 	{
 		cout << "Canceling transaction..." << endl << endl;
 	}
-	else if (remainingBills < bill[option]/20)
+	else if (remainingBills < bill[option] / 20)
 	{
 		cout << "Insufficient funds in ATM" << endl;
 		cout << "Please choose a smaller amount" << endl;
@@ -170,10 +170,10 @@ void withdrawal(Account& currentAccount, int& remainingBills)
 	}
 	else
 	{
-		remainingBills -= bill[option]/20;
+		remainingBills -= bill[option] / 20;
 		currentAccount.availableBalance -= bill[option];
-
-//		cout << "avaliable Balance " << currentAccount.availableBalance << " ATM remaining Bill " << remainingBills << endl << endl;
+		cout << "Please take your cash from the cash dispenser" << endl << endl;
+		//		cout << "avaliable Balance " << currentAccount.availableBalance << " ATM remaining Bill " << remainingBills << endl << endl;
 	}
 } // end function withdrawal
 
@@ -213,10 +213,10 @@ void saveAccount(Account currentAccount, int n)
 		exit(1);
 	}
 
-	int location=(n-1) * sizeof(Account);
-	outFile.seekp(location,outFile.beg);
-	outFile.write(reinterpret_cast<const char*>(&currentAccount),sizeof(Account));
-	
+	int location = (n - 1) * sizeof(Account);
+	outFile.seekp(location, outFile.beg);
+	outFile.write(reinterpret_cast<const char*>(&currentAccount), sizeof(Account));
+
 	//
 	//outFile.seekp(8 + 16 * (n - 1), ios::beg);
 	//outFile.write(reinterpret_cast<char*>(&currentAccount.availableBalance), sizeof(currentAccount.availableBalance));
