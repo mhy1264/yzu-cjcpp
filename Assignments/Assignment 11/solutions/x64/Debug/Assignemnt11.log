@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\Huan\OneDrive - 元智大學\Assignment 11-2\Assignemnt11\Source.cpp(364,55): warning C4267: '=': 將 'size_t' 轉換為 'int'，資料可能遺失
+C:\Users\Huan\OneDrive - 元智大學\Assignment 11-2\Assignemnt11\Source.cpp(594,6): warning C4101: 'i': 未參考的區域變數
+  Assignemnt11.vcxproj -> C:\Users\Huan\OneDrive - 元智大學\Assignment 11-2\Assignemnt11\x64\Debug\Assignemnt11.exe
