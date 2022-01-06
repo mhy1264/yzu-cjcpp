@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iostream>
 using std::cin;
 using std::cout;
 using std::endl;
@@ -171,7 +172,7 @@ Date computeCurrentDate()
 	tm structuredTime;
 	time_t rawTime = time(0);
 	localtime_s(&structuredTime, &rawTime);
-	
+
 	int day = structuredTime.tm_mday;
 	int month = structuredTime.tm_mon + 1;
 	int year = structuredTime.tm_year + 1900;
@@ -244,11 +245,15 @@ Date add(Date date, int numDays)
 	if (leapYear(date.year))
 		days[2] = 29;
 
-	while (date.day <= days[date.month])
+	while (date.day >= days[date.month])
 	{
 		date.day -= days[date.month];
 		date.month++;
 	}
+
+	if (!date.day)
+		date.day++;
+
 
 	return date;
 }
@@ -260,31 +265,71 @@ void initAvailTables(vector< AvailTable >& availTables, Date currentDate)
 	vector<AvailTable>buffer(availTables.size());
 
 	int i, j;
-
+	
 	for (i = 0, j = 0; i < availTables.size(); i++)
 	{
 		if (lessEqual(availTables[i].date, currentDate))
 			continue;
 		else if (availTables[i].date.day == 0)
 			break;
-		else 
+		else
 			buffer[j++] = availTables[i];
 	}
-
 
 	buffer.resize(j);
 	availTables.clear();
 	availTables.resize(j);
 	availTables = buffer;
+	int size = availTables.size();
 
-	for (int i = 0; i < availTables.size(); i++)
+	//merge reservation items
+	buffer.clear();
+
+	AvailTable temp;
+	ifstream table1("AvailTables1.dat", ios::in | ios::binary);
+	if (!table1)
 	{
-		for (int j = 1; j <= 5; j++)
+		cout << "Avaliable couldn't be opened";
+	}
+	while (table1.read(reinterpret_cast<char*>(&temp), sizeof(AvailTable)))
+	{
+		buffer.push_back(temp);
+	}
+	table1.close();
+
+	for (i = 0, j = 0; i < size and j < buffer.size(); i++)
+		if (equal(availTables[i].date, buffer[j].date))
+			availTables[i] = buffer[j++];
+
+	// delete non-zero date to buffer 
+	// THAN assign to avail table
+	buffer.clear();
+	for (i = 0; i < size; i++)
+	{
+		if (availableTables(availTables, i, 1) or availableTables(availTables, i, 2) or availableTables(availTables, i, 3))
 		{
-			availTables[i].numAvailTables[1][j] = TOTAL_NUM_TABLES;
-			availTables[i].numAvailTables[2][j] = TOTAL_NUM_TABLES;
-			availTables[i].numAvailTables[3][j] = TOTAL_NUM_TABLES;
+			buffer.push_back(availTables[i]);
 		}
+	}
+
+	availTables.clear();
+	availTables.resize(buffer.size());
+	availTables = buffer;
+	size = availTables.size();
+	
+
+
+	AvailTable buff;
+	for (i = size; i < 30; i++)
+	{
+		buff.date = add(availTables[i - 1].date, 1);
+		for (j = 0; j < 6; j++)
+		{
+			buff.numAvailTables[1][j] = TOTAL_NUM_TABLES;
+			buff.numAvailTables[2][j] = TOTAL_NUM_TABLES;
+			buff.numAvailTables[3][j] = TOTAL_NUM_TABLES;
+		}
+		availTables.push_back(buff);
 	}
 }
 
@@ -374,58 +419,74 @@ void makeReservation(vector< Reservation >& reservations, vector< AvailTable >& 
 void chooseDateTime(vector< AvailTable >& availTables, Reservation& reservation, Date currentDate, int tableType)
 {
 	int dateCode, timeCode;
-//	int count = 1;
+	//	int count = 1;
 	char times[4][8] = { "", "11:30", "14:30", "17:30" };
-
+	bool availDate[30];
+	for (int i = 0; i < availTables.size(); i++) {
+		availDate[i] = availableTables(availTables, i, tableType);
+	}
 	cout << "Choose a date" << endl;
-	bool buffer = availableTables(availTables, true, tableType);
-	displayAvailDates(availTables, &buffer , tableType);
+	displayAvailDates(availTables, availDate, tableType);
 	cout << endl;
 	cout << "?";
-	cin >> dateCode;
-	dateCode--;
-	cout << "Choose a time: " << endl;
+	while (dateCode=inputAnInteger(1,30))
+	{
+		dateCode--;
+		if (availDate[dateCode])
+			break;
+		else
+			cout << "?";
+	}
+
+	cout << "Choose a time" << endl;
 	for (int i = 1; i <= 3; i++)
 	{
 		if (availTables[dateCode].numAvailTables[i][tableType] > 0)
 			cout << i << ". " << times[i] << endl;
 	}
-
 	cout << "?";
-	cin >> timeCode;
+	while (timeCode = inputAnInteger(1, 3))
+	{
+		if (availTables[dateCode].numAvailTables[timeCode][tableType])
+			break;
+		else
+			cout << "?";
+	}
 
 	reservation.time = timeCode;
 	reservation.date.day = availTables[dateCode].date.day;
 	reservation.date.year = availTables[dateCode].date.year;
-	reservation.date.month = availTables[dateCode].date.month;	
+	reservation.date.month = availTables[dateCode].date.month;
 
 }
 
 void displayAvailDates(vector< AvailTable >& availTables, bool availableDate[], int tableType)
 {
-	
+
 	int count = 0;
 	for (int i = 0; i < availTables.size(); i++)
 	{
-		if (!(count % 4))
-			cout << endl;
-		if (availableTables(availTables, i, tableType))
+		if (availableDate[i])
 		{
-			printf("%3d. %5d/%3d /%3d ", i+1, availTables[i].date.year, availTables[i].date.month, availTables[i].date.day);
+			printf("%3d. %5d/%3d /%3d ", i + 1, availTables[i].date.year, availTables[i].date.month, availTables[i].date.day);
 			count++;
+			if (!(count % 4))
+				cout << endl;
 		}
 	}
+
 
 }
 
 // returns true if there are available tables on availTables[ i ].date for corresponding table type
 bool availableTables(vector< AvailTable >& availTables, size_t i, int tableType)
 {
-	int totalTables = 0;
-	for (int j = 1; j < 4; j++)
-		totalTables += availTables[i].numAvailTables[j][tableType];
-
-	return totalTables;
+	if (availTables[i].numAvailTables[1][tableType] != 0 || availTables[i].numAvailTables[2][tableType] != 0 || availTables[i].numAvailTables[3][tableType] != 0) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 
 }
 
@@ -443,7 +504,7 @@ void decreaseAvailTables(vector< AvailTable >& availTables, Date date, int timeC
 	--availTables[i].numAvailTables[timeCode][tableType];
 
 }
-      
+
 void reservationInquiry(vector< Reservation >& reservations, vector< AvailTable >& availTables)
 {
 	if (reservations.size() == 0)
@@ -521,9 +582,9 @@ void displayReservationInfo(const vector< Reservation >& reservations, char rese
 		<< setw(19) << "No of Customers" << setw(12) << "Password"
 		<< setw(19) << "Reservation No." << endl;
 
-	for (size_t i = 0; i < reservations.size(); ++i)
-		if (strcmp(reservations[i].reservationNumber, reservationNumber) == 0)
-			break;
+	//for (size_t i = 0; i < reservations.size(); ++i)
+	//	if (strcmp(reservations[i].reservationNumber, reservationNumber) == 0)
+	//		break;
 
 	char times[4][8] = { "", "11:30", "14:30", "17:30" };
 	int count = 0;
@@ -536,7 +597,7 @@ void displayReservationInfo(const vector< Reservation >& reservations, char rese
 void erase(vector< Reservation >& reservations, int position)
 {
 
-	vector<Reservation>buffer(reservations.size()-1);
+	vector<Reservation>buffer(reservations.size() - 1);
 	int i, j;
 	for (i = 0, j = 0; i < position; i++)
 		buffer[j++] = reservations[i];
@@ -553,7 +614,7 @@ void erase(vector< Reservation >& reservations, int position)
 void saveAvailTables(const vector< AvailTable >& availTables)
 {
 
-	ofstream outFile("availTables.dat", ios::out | ios::binary);
+	ofstream outFile("availTables1.dat", ios::out | ios::binary);
 
 	if (!outFile)
 	{
