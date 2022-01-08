@@ -521,40 +521,53 @@ void reservationInquiry(vector< Reservation >& reservations, vector< AvailTable 
 	cin >> reservationNumber;
 	cin.ignore();
 
-	int check = 1;
+	int isExist = 0;
+	int position;
 	for (int i = 0; i < reservations.size(); i++)
-	{
 		if (!strcmp(reservations[i].reservationNumber, reservationNumber))
 		{
-			check = 0;
-			cout << "\nEnter reservation password: ";
-			char reservationPassword[12];
-			cin >> reservationPassword;
-			cin.ignore();
-
-			if (!strcmp(reservations[i].password, reservationPassword))
-			{
-				cout << setfill(' ') << endl << setw(11) << "Mobile No." << setw(10) << "Name"
-					<< setw(14) << "Date" << setw(9) << "Time" << setw(30) << "Email"
-					<< setw(19) << "No of Customers" << setw(12) << "Password"
-					<< setw(19) << "Reservation No." << endl;
-
-				displayReservationInfo(reservations[i]);
-				cout << "Cancel this reservation(y / n) ? ";
-				char opCode;
-				cin >> opCode;
-
-				if (opCode == 'y')
-				{
-					cin.ignore();
-					erase(reservations, i);
-				}
-			}
+			isExist = 1;
+			cout << "find" << endl;
+			position = i;
 			break;
 		}
-	}
 
-	if (check)
+	if (isExist)
+	{
+		cout << "\nEnter reservation password: ";
+		char reservationPassword[12];
+		cin >> reservationPassword;
+		cin.ignore();
+
+		if (!strcmp(reservations[position].password, reservationPassword))
+		{
+			displayReservationInfo(reservations, reservationNumber);
+			cout << "Cancel this reservation(y / n) ? ";
+			char opCode;
+			while (1)
+			{
+				cin >> opCode;
+				if (opCode == 'y' or opCode == 'n')
+					break;
+			}
+			cin.ignore();
+
+			if (opCode == 'y')
+			{
+				// release delete item
+				int j;
+				for (j = 0; j < availTables.size(); j++)
+				{
+					if (equal(availTables[j].date, reservations[position].date))
+						break;
+				}
+				++availTables[j].numAvailTables[reservations[position].time][tableTypes[reservations[position].numCustomers]];
+				//delete item
+				erase(reservations, position);
+			}
+		}
+	}
+	else
 		cout << "No reservations with this reservation number!" << endl;
 }
 
