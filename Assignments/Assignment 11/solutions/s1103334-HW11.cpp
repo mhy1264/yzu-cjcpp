@@ -645,6 +645,6 @@ void saveReservations(const vector< Reservation >& reservations)
 	for (int i = 0; i < reservations.size(); i++)
 	{
 		Reservation buffer = reservations[i];
-		outFile.write(reinterpret_cast<char*>(&buffer), sizeof(reservations));
+		outFile.write(reinterpret_cast<char*>(&buffer), sizeof(Resvesion));
 	}
 }
