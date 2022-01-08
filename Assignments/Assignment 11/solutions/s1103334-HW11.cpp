@@ -164,6 +164,7 @@ int main()
 	}
 
 	system("pause");
+
 }
 
 Date computeCurrentDate()
@@ -360,6 +361,7 @@ void loadReservations(vector< Reservation >& reservations, Date currentDate)
 		cout << "Reservations.dat cann't be opend";
 	}
 	Reservation buffer;
+	inFile.seekg(0, ios::beg);
 	while (inFile.read(reinterpret_cast<char*>(&buffer), sizeof(Reservation)))
 	{
 		reservations.push_back(buffer);
@@ -507,6 +509,7 @@ void decreaseAvailTables(vector< AvailTable >& availTables, Date date, int timeC
 
 void reservationInquiry(vector< Reservation >& reservations, vector< AvailTable >& availTables)
 {
+
 	if (reservations.size() == 0)
 	{
 		cout << "\nNo reservations!\n";
@@ -645,6 +648,7 @@ void saveReservations(const vector< Reservation >& reservations)
 	for (int i = 0; i < reservations.size(); i++)
 	{
 		Reservation buffer = reservations[i];
-		outFile.write(reinterpret_cast<char*>(&buffer), sizeof(Resvesion));
+		outFile.write(reinterpret_cast<char*>(&buffer), sizeof(Reservation));
 	}
+
 }
