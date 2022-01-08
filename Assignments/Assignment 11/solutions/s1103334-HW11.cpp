@@ -523,11 +523,13 @@ void reservationInquiry(vector< Reservation >& reservations, vector< AvailTable 
 
 	int isExist = 0;
 	int position;
+	// FIND THAT THERE IS CORRESPOND RECORDS 
+	// IF FIND isExist = 1 ;
 	for (int i = 0; i < reservations.size(); i++)
 		if (!strcmp(reservations[i].reservationNumber, reservationNumber))
 		{
 			isExist = 1;
-			cout << "find" << endl;
+			// cout << "find" << endl;
 			position = i;
 			break;
 		}
