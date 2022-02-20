@@ -124,11 +124,11 @@ void vector::resize(const size_type newSize)
 			for (int i = 0; i < originalSize; i++)
 				buffer[i] = at(i);
 
-			myFirst = reinterpret_cast<pointer>(&buffer[0]);
+			myFirst =&buffer[0];
 
-			myLast = reinterpret_cast<pointer>(&buffer[newSize]);
+			myLast = &buffer[newSize];
 
-			myEnd = reinterpret_cast<pointer>(&buffer[newCapacity]);
+			myEnd = &buffer[newCapacity];
 
 
 		}
