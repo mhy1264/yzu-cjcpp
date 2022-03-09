@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 using std::cout;
 using std::exit;
 
@@ -44,28 +44,17 @@ string::string(const size_type count, const char ch)
 	mySize(0),
 	myRes(15)
 {
+
 	mySize = count;
+
 	if (count > 15)
 	{
-		size_type cap = 15;
-		while (cap < count)
-		{
-			cap += 16;
-		}
-
-		myRes = cap;
-
-		bx.ptr = new value_type[count + 1];
-
-		for (int i = 0; i < count; i++)
-			bx.ptr[i] = ch;
+		myRes = (mySize / 16) * 16 + 15;
+		bx.ptr = new value_type[myRes + 1]();
 	}
-	else
-	{
-		int i;
-		for (i = 0; i < count; i++)
-			bx.buf[i] = ch;
-	}
+	for (size_t i = 0; i < count; i++) 
+		myPtr()[i] = ch;
+	myPtr()[mySize] = '\0';
 }
 
 string::string(const string& right)
@@ -125,8 +114,7 @@ string& string::assign(const string& right)
 			bx.ptr = new value_type[myRes + 1]();
 		}
 		mySize = right.mySize;
-		for (int i = 0; i < mySize; i++)
-			myPtr()[i] = right.myPtr()[i];
+		for (int i = 0; i < mySize; i++) myPtr()[i] = right.myPtr()[i];
 		myPtr()[mySize] = '\0';
 
 	}
@@ -287,9 +275,7 @@ void string::resize(const size_type newSize, const char ch)
 }
 
 string::size_type string::capacity() const
-
 {
-
 	return myRes;
 }
 

@@ -74,6 +74,8 @@ vector& vector::assign(const vector& right)
 			if (newCapacity < rightSize)
 				newCapacity = rightSize;
 
+			delete[] myFirst;
+
 			myFirst = new value_type[newCapacity]();
 
 			for (int i = 0; i < rightSize; i++)
