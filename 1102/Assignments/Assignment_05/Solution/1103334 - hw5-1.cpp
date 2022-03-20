@@ -529,7 +529,7 @@ void HugeInteger< T >::operator-=(HugeInteger< T >& op2)
 		difference.integer[i] -= op2.integer[i];
 
 	for(int i=0;i<difference.size();i++)
-		if (difference.integer[i] < 0)
+		if (difference.integer[i] < 0 || difference.integer[i] > 9)
 		{
 			difference.integer[i] += 10;
 			difference.integer[i + 1] -= 1;
