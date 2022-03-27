@@ -413,20 +413,20 @@ bool HugeInteger< T >::operator==(const HugeInteger< T >& right) const
 template< typename T >
 bool HugeInteger< T >::operator<(const HugeInteger< T >& right) const
 {
-	if (this->integer.size() < right.integer.size())
+	if (integer.size() < right.integer.size()) // modified
 		return true;
-	else if (this->integer.size() > right.integer.size())
+	else if (integer.size() > right.integer.size()) // modified
 		return false;
 	else
 	{
-		for (size_t i = 0; i < this->integer.size(); i++)
+		for (int i = integer.size() - 1; i >= 0; i--) // modified
 		{
 			if (right.integer[i] != integer[i])
-				return false;
+				return integer[i] < right.integer[i]; // modified
 		}
-		return true;
+		// return true; // deleted 
 	}
-
+	return false; // added
 
 } // end function operator<
 
@@ -449,19 +449,19 @@ HugeInteger< T > HugeInteger< T >::square()
 	
 	for (int i = 0; i < integer.size(); i++)
 		for (int j = 0; j < integer.size(); j++)
-			square.integer[i + j] = integer[i] * integer[j];
+			square.integer[i + j] += integer[i] * integer[j]; // modified
 
-	for (int i = 0; i < square.integer.size()-1; i++)
+	for (int i = 0; i <  square.integer.size()-1; i++)
+	{if(square.integer[i]>9999){  // modified
+		square.integer[i + 1] += square.integer[i] / 10000; // modified
+		square.integer[i] %= 10000; // modified
+	}}// added
+	while (*(square.integer.end()-1) == 0) // modified
 	{
-		square.integer[i + 1] += square.integer[i] / 1000;
-		square.integer[i] %= 1000;
+		square.integer.erase(square.integer.end()-1); // modified
 	}
 
-	while (square.integer.end() == 0)
-	{
-		square.integer.erase(square.integer.end());
-	}
-
+ 	
 	return square;
 }
 
@@ -474,34 +474,35 @@ HugeInteger< T > HugeInteger< T >::squareRoot()
 
 	size_t sqrtSize = (integer.size() + 1) / 2;
 	HugeInteger< T > sqrt(sqrtSize);
-	HugeInteger< T > buffsqrt(sqrtSize);
-	HugeInteger<T> value = *this;
-	for (int i = integer.size() - 1; i >= 0; i--)
+	 HugeInteger< T > buffsqrt(sqrtSize);
+	 HugeInteger<T> value = *this;
+	for (int i = sqrtSize - 1; i >= 0; i--) // modified
 	{
-		T high = 9999, low = 0;
+		int high = 10000, low = 0; // modified
 		
-		while (1)
+		while (high >= low) // modified
 		{
-			T middle = high - low / 2;
+			int middle = (high + low) / 2; // modified
 			sqrt.integer[i]= middle ;
-			buffsqrt.integer[i] = middle + 1;
-			HugeInteger< T > SQRT = sqrt.square();
-			HugeInteger< T > BUFFSQRT = buffsqrt.square();
+			 buffsqrt.integer[i] = middle + 1;
+			 // HugeInteger< T > SQRT = sqrt.square(); // deleted
+			 // HugeInteger< T > BUFFSQRT = buffsqrt.square(); // deleted
 
-			if (value < SQRT) //too high
+			if (*this < sqrt.square()) //too high
 			{
-				cout <<" too high"<<endl;
+				// cout <<" too high"<<endl;//deleted
 				high = middle - 1;
 			}
-			else if (value < SQRT)) // too low 
+			else if (*this == sqrt.square())  // too low //modified
 			{
-			cout << " too low" << endl;
-				low = middle + 1;
+				// cout << " too low" << endl; //deleted
+				return sqrt; // modified
 			}
-			else if(SQRT<value and BUFFSQRT>value)
+			else 
 			{
-				break;
+				low = middle + 1;// modified
 			}
+			sqrt.integer[i] =low-1;// added 
 		}
 
 	}
