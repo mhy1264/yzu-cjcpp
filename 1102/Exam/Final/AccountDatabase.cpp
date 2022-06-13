@@ -130,14 +130,15 @@ void AccountDatabase::saveAccountDetails()
 
 Account* AccountDatabase::getAccount(string email)
 {
+    Account* temp = nullptr; //add
 
-
+	
 	for (int i = 0; i < accounts.size(); i++)
 	{
-		Account temp = accounts[i];
-		if (temp.getEmail() == email)
-			return &temp;
+		if (accounts[i].getEmail() == email)
+			temp = &accounts[i];
+
 	}
-	return nullptr;
+    return temp;
 
 }

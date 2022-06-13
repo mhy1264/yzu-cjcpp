@@ -28,7 +28,7 @@ void OrderDatabase::loadOrderDetails()
     Date today = computeCurrentDate();
     while (inFile.read(reinterpret_cast<char*>(&ord), sizeof(Order)))
     {
-        if(ord.getDeliveryDate()<=computeCurrentDate())
+        if(computeCurrentDate() <= ord.getDeliveryDate()) //Modified
             orders.push_back(ord);
     }
     inFile.close();

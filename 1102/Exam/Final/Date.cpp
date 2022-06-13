@@ -112,9 +112,9 @@ Date Date::operator+( int numDays )
     }
 
     Date temp;
-    temp.setDay(tempDay);
-    temp.setMonth(tempMonth);
-    temp.setYear(tempYear);
+    temp.setYear(tempYear); //modify
+    temp.setMonth(tempMonth);//modify
+    temp.setDay(tempDay);//modify
 
     return temp;
 

@@ -103,10 +103,12 @@ Date computeCurrentDate()
 	int day = structuredTime.tm_mday;
 
 	Date currentDate;
-	currentDate.setYear(year);
-	currentDate.setMonth(month);
-	currentDate.setDay(day);
-
+	//currentDate.setYear(year);
+	//currentDate.setMonth(month);
+	//currentDate.setDay(day);
+	currentDate.setYear(2022);
+	currentDate.setMonth(6);
+	currentDate.setDay(17);
 	return currentDate;
 }
 

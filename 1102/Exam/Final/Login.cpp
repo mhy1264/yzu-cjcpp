@@ -26,13 +26,12 @@ void Login::run()
 		cout << "\nNo account exists with the e-mail!" << endl;
 		cout << "\nEmail (Account number) (0 to end):";
 		cin >> email;
-		cin.ignore();
-
 	}
+	cin.ignore();
+
 
 	if (email != "0")
 	{
-
 
 		cout << "\nPassword:";
 		cin >> password;
@@ -82,7 +81,7 @@ void Login::authenticateUser(string& email, string& password)
 {
 
 	Account currentAccount(email);
-	while (accountDatabase.authenticateUser(email,password))
+	while (!accountDatabase.authenticateUser(email,password)) //Modify
 	{
 		cout << "\nInvalid password. Please try again.";
 
@@ -122,20 +121,24 @@ void Login::checkout(string email)
 {
 	Account currentAccount(email);
 
+	currentAccount.setCart(accountDatabase.getCart(email));
 	if (currentAccount.emptyCart())
 	{
 		cout << "\nYou shopping cart s empty!" << endl;
 	}
 	else
 	{
-		Order newOrder;
-		cout << "\nOrder Number: " << newOrder.getOrderNumber() << endl;
-		cout << "Full Name: " << currentAccount.getName() << endl;
-		cout << "Shipping Address" << currentAccount.getAddress() << endl;
+		Order newOrder(orderDatabase.generateOrderNumber(),email);
+		cout << "Order Number: " << newOrder.getOrderNumber() << endl;
+		cout << "Full Name: " << accountDatabase.getName(email) << endl;
+		cout << "Shipping Address" << accountDatabase.getAddress(email) << endl;
 		cout << "Bank account: ¦X§@ª÷®w 0062013162077139" << endl;
-
+		cout << endl << setw(9) << "Item Code" << setw(44) << "Item" << setw(7) << "Price" << setw(10) << "Quantity" << setw(10) << "Subtotal" << endl;
+		accountDatabase.displayOrders(email);
 		newOrder.setDeliveryDate(deliveryDate());
+		newOrder.setOrderDetails(accountDatabase.getCart(email));
 		orderDatabase.pushBack(newOrder);
+		accountDatabase.resetCart(email);
 	}
 
 
